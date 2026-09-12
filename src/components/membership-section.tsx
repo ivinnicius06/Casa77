@@ -25,8 +25,9 @@ export function MembershipSection() {
         </div>
         <div>
           <p>
-            Conheça os planos da primeira barbearia
-            <br className="desktop-break" /> por assinatura da região.
+            Sete opções para cuidar do seu estilo.
+            <br className="desktop-break" /> Compare os serviços e os dias de
+            utilização.
           </p>
           <span className="membership-proof">
             <span className="status-dot" /> MAIS DE 300 PESSOAS JÁ SÃO DA CASA.
@@ -37,6 +38,7 @@ export function MembershipSection() {
         {plans.map((plan) => (
           <article
             key={plan.id}
+            data-plan={plan.id}
             className={`plan-card ${plan.recommended ? "plan-featured" : ""}`}
             data-reveal
           >
@@ -50,9 +52,14 @@ export function MembershipSection() {
                 <Plus size={18} />
               )}
             </div>
-            <h3>{plan.name}</h3>
-            <p className="plan-label">{plan.label}</p>
-            <p className="plan-description">{plan.description}</p>
+            <h3>{plan.name.split(" - ")[0]}</h3>
+            <p className="plan-label">
+              {plan.name.split(" - ")[1] || plan.label}
+            </p>
+            <p className="plan-description">
+              <span className="plan-days-label">Dias de utilização</span>
+              {plan.description}
+            </p>
             <div className="plan-price">
               {plan.price !== null ? (
                 <>
@@ -62,7 +69,7 @@ export function MembershipSection() {
                       currency: "BRL",
                     })}
                   </strong>
-                  <small>/ mês</small>
+                  <small>Valor da assinatura</small>
                 </>
               ) : (
                 <>

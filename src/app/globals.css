@@ -433,6 +433,51 @@ p {
   mix-blend-mode: multiply;
   mask-image: linear-gradient(to bottom, #000 87%, transparent 100%);
 }
+.hero-detail-plane {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.hero-detail {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 7.5%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  color: #fff;
+  opacity: 0;
+  visibility: hidden;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 7%);
+  background: linear-gradient(transparent 40%, rgb(0 0 0 / 24%));
+  will-change: transform, opacity;
+}
+.hero-detail-dot {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 4px;
+  height: 4px;
+  background: #fff;
+}
+.hero-detail-label {
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  font-size: clamp(8px, 0.7vw, 11px);
+  line-height: 1.1;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 45%);
+}
+.hero-detail-label small {
+  display: block;
+  font-size: 0.85em;
+  font-weight: 400;
+  margin-top: 2px;
+}
 .hero-location {
   position: absolute;
   top: 124px;
@@ -1163,6 +1208,13 @@ p {
   font-weight: 400;
   line-height: 1;
   margin-bottom: 9px;
+  overflow-wrap: anywhere;
+}
+.plan-days-label {
+  display: block;
+  font-size: 10px;
+  margin-bottom: 4px;
+  color: #616f54;
 }
 .plan-label {
   font-size: 12px;
@@ -1242,6 +1294,126 @@ p {
 .plan-benefits li {
   display: flex;
   gap: 10px;
+}
+.membership-section .plan-card {
+  --plan-bg: #e8e8e8;
+  --plan-ink: #202020;
+  --plan-muted: #505050;
+  --plan-accent: #3d3d3d;
+  --plan-line: #c6c6c6;
+  --plan-button-text: #fff;
+  position: relative;
+  background: var(--plan-bg);
+  color: var(--plan-ink);
+  border: 1px solid var(--plan-line);
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 5%);
+}
+.plan-card[data-plan="02"] {
+  --plan-bg: #cfcfcf;
+  --plan-ink: #202020;
+  --plan-muted: #484848;
+  --plan-accent: #333333;
+  --plan-line: #ababab;
+  --plan-button-text: #ffffff;
+}
+.plan-card[data-plan="03"] {
+  --plan-bg: #b1b1b1;
+  --plan-ink: #151515;
+  --plan-muted: #383838;
+  --plan-accent: #292929;
+  --plan-line: #8d8d8d;
+  --plan-button-text: #ffffff;
+}
+.plan-card[data-plan="04"] {
+  --plan-bg: #656565;
+  --plan-ink: #ffffff;
+  --plan-muted: #eeeeee;
+  --plan-accent: #f2f2f2;
+  --plan-line: #929292;
+  --plan-button-text: #202020;
+}
+.plan-card[data-plan="05"] {
+  --plan-bg: #484848;
+  --plan-ink: #ffffff;
+  --plan-muted: #dddddd;
+  --plan-accent: #e8e8e8;
+  --plan-line: #737373;
+  --plan-button-text: #202020;
+}
+.plan-card[data-plan="06"] {
+  --plan-bg: #2c2c2c;
+  --plan-ink: #ffffff;
+  --plan-muted: #cccccc;
+  --plan-accent: #dedede;
+  --plan-line: #555555;
+  --plan-button-text: #171717;
+}
+.plan-card[data-plan="07"] {
+  --plan-bg: #171717;
+  --plan-ink: #ffffff;
+  --plan-muted: #c6c6c6;
+  --plan-accent: #f3f3f3;
+  --plan-line: #424242;
+  --plan-button-text: #171717;
+}
+.membership-section .plan-top {
+  color: var(--plan-muted);
+  margin-bottom: 24px;
+}
+.membership-section .plan-card h3 {
+  font-size: clamp(38px, 3.4vw, 52px);
+}
+.membership-section .plan-label {
+  min-height: 36px;
+  color: var(--plan-ink);
+  font-size: 12px;
+}
+.membership-section .plan-description {
+  background: rgb(127 127 127 / 10%);
+  border: 1px solid var(--plan-line);
+  border-radius: 6px;
+  padding: 10px 12px;
+  max-width: none;
+  min-height: 68px;
+  color: var(--plan-ink);
+  font-weight: 600;
+  font-size: 12px;
+}
+.membership-section .plan-days-label,
+.membership-section .plan-price small {
+  color: var(--plan-muted);
+  font-weight: 400;
+}
+.membership-section .plan-price {
+  border-color: var(--plan-line);
+}
+.membership-section .plan-price strong {
+  color: var(--plan-ink);
+  font-size: 44px;
+}
+.membership-section .plan-benefits {
+  color: var(--plan-ink);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.membership-section .plan-benefits svg {
+  color: var(--plan-accent);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.membership-section .plan-card > .button {
+  background: var(--plan-accent);
+  color: var(--plan-button-text);
+  border-color: var(--plan-accent);
+  border-radius: 5px;
+  min-height: 48px;
+}
+.membership-section .plan-card > .button:hover {
+  filter: brightness(1.1);
+}
+.membership-section .plan-card > .button:focus-visible {
+  outline-color: var(--plan-ink);
 }
 .membership-steps {
   display: grid;
@@ -1423,6 +1595,9 @@ p {
   scrollbar-width: none;
   position: relative;
   gap: 20px;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
 }
 .review-card {
   flex: 0 0 100%;
@@ -1453,6 +1628,15 @@ p {
   align-items: center;
   margin-top: 25px;
   font-size: 11px;
+  position: relative;
+  z-index: 2;
+}
+.review-controls .icon-button {
+  touch-action: manipulation;
+  cursor: pointer;
+}
+.review-controls .icon-button:active {
+  transform: scale(0.94);
 }
 .review-rating {
   display: flex;

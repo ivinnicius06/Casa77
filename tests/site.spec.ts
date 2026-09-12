@@ -66,7 +66,7 @@ test("desktop: narrative, reversible video scrub, tabs, real contact links and m
     "aria-selected",
     "true",
   );
-  await expect(page.getByRole("tabpanel")).toContainText("Pedir localização");
+  await expect(page.getByRole("tabpanel")).toContainText("Ver no mapa");
   const links = await page
     .locator('a[target="_blank"]')
     .evaluateAll((els) => els.map((el) => (el as HTMLAnchorElement).href));
@@ -172,6 +172,45 @@ test("mobile menu focus trap, closing, anchor and contextual analytics event", a
   ).toEqual(["whatsapp_click", "plan_interest"]);
 });
 
+test("mobile: hero follows native scroll and review controls advance", async ({
+  browser,
+  baseURL,
+}) => {
+  const context = await browser.newContext({
+    baseURL,
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+    deviceScaleFactor: 3,
+    reducedMotion: "no-preference",
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  await expect(page.locator(".pin-spacer")).toHaveCount(1);
+  await page.evaluate(() => window.scrollTo(0, innerHeight * 1.8));
+  await expect(page.locator(".hero-chapter").nth(2)).toHaveAttribute(
+    "aria-hidden",
+    "false",
+  );
+  await expect(page.locator(".hero-detail").first()).toBeVisible();
+
+  await page.locator("#avaliacoes").scrollIntoViewIfNeeded();
+  const track = page.locator("#review-track");
+  await page.getByRole("button", { name: "Próxima avaliação" }).tap();
+  await expect(page.locator(".review-controls span")).toHaveText("2 / 6");
+  await expect
+    .poll(() => track.evaluate((el) => el.scrollLeft))
+    .toBeGreaterThan(0);
+  await track.evaluate((el) => {
+    const card = el.children[2] as HTMLElement;
+    el.scrollTo({ left: card.offsetLeft, behavior: "instant" });
+  });
+  await expect(page.locator(".review-controls span")).toHaveText("3 / 6");
+  await page.getByRole("button", { name: "Avaliação anterior" }).tap();
+  await expect(page.locator(".review-controls span")).toHaveText("2 / 6");
+  await context.close();
+});
+
 test("reduced motion and accessibility", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -198,13 +237,15 @@ test("reduced motion and accessibility", async ({ page }) => {
 
 test("without JavaScript, content, poster, contact and legal route remain available", async ({
   browser,
+  baseURL,
 }) => {
   const context = await browser.newContext({
+    baseURL,
     javaScriptEnabled: false,
     viewport: { width: 390, height: 844 },
   });
   const page = await context.newPage();
-  await page.goto("http://localhost:3077");
+  await page.goto("/");
   await expect(page.locator("h1")).toBeVisible();
   await expect(page.locator(".nojs-nav")).toBeVisible();
   await expect(page.locator("video")).toHaveAttribute(
@@ -212,7 +253,7 @@ test("without JavaScript, content, poster, contact and legal route remain availa
     "/images/hero-poster.webp",
   );
   await expect(page.locator(".mobile-units .unit-info")).toHaveCount(3);
-  await page.goto("http://localhost:3077/privacidade");
+  await page.goto("/privacidade");
   await expect(
     page.getByRole("heading", { name: "Privacidade." }),
   ).toBeVisible();

@@ -7,15 +7,20 @@ import { reviews, reviewSummary, reviewUnits } from "@/content/site";
 export function ReviewsSection() {
   const items = reviews.filter((review) => review.verified);
   const [index, setIndex] = useState(0);
+  const indexRef = useRef(0);
   const track = useRef<HTMLDivElement>(null);
   function move(direction: number) {
     if (!track.current || !items.length) return;
-    const next = (index + direction + items.length) % items.length;
+    const next = (indexRef.current + direction + items.length) % items.length;
     const card = track.current.children[next] as HTMLElement;
+    const trackBounds = track.current.getBoundingClientRect();
+    const cardBounds = card.getBoundingClientRect();
+    indexRef.current = next;
+    setIndex(next);
     track.current.scrollTo({
-      left: card.offsetLeft,
+      left: track.current.scrollLeft + cardBounds.left - trackBounds.left,
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "instant"
+        ? "auto"
         : "smooth",
     });
   }
@@ -79,6 +84,7 @@ export function ReviewsSection() {
           </p>
           <div
             className="review-track"
+            id="review-track"
             ref={track}
             role="region"
             aria-roledescription="carrossel"
@@ -96,6 +102,7 @@ export function ReviewsSection() {
                     : best,
                 0,
               );
+              indexRef.current = nearest;
               setIndex(nearest);
             }}
           >
@@ -133,7 +140,10 @@ export function ReviewsSection() {
           <div className="review-controls">
             <button
               className="icon-button"
+              type="button"
               aria-label="Avaliação anterior"
+              aria-controls="review-track"
+              disabled={items.length <= 1}
               onClick={() => move(-1)}
             >
               <ArrowLeft />
@@ -143,7 +153,10 @@ export function ReviewsSection() {
             </span>
             <button
               className="icon-button"
+              type="button"
               aria-label="Próxima avaliação"
+              aria-controls="review-track"
+              disabled={items.length <= 1}
               onClick={() => move(1)}
             >
               <ArrowRight />

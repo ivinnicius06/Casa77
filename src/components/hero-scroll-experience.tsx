@@ -10,6 +10,50 @@ import { site } from "@/content/site";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 const chapters = ["Identidade", "O clube", "Nossa casa", "Seu momento"];
+const detailPoints = [
+  {
+    label: "Cabelo",
+    detail: "Estilo",
+    positions: [
+      [51, 22],
+      [50, 22],
+      [50, 22],
+      [51, 22],
+      [50, 22],
+      [54, 22],
+      [55, 22],
+      [51, 22],
+    ],
+  },
+  {
+    label: "Sobrancelha",
+    detail: "Precisão",
+    positions: [
+      [56, 44],
+      [44, 44],
+      [42, 44],
+      [56, 44],
+      [54, 44],
+      [62, 44],
+      [62, 44],
+      [56, 44],
+    ],
+  },
+  {
+    label: "Barba",
+    detail: "Contorno",
+    positions: [
+      [49, 70],
+      [42, 70],
+      [41, 70],
+      [50, 70],
+      [50, 70],
+      [58, 70],
+      [58, 70],
+      [50, 70],
+    ],
+  },
+];
 
 export function HeroScrollExperience() {
   const root = useRef<HTMLElement>(null);
@@ -29,6 +73,68 @@ export function HeroScrollExperience() {
         },
         (context) => {
           const { desktop, reduce } = context.conditions!;
+          const media = video.current!;
+          const plane =
+            root.current!.querySelector<HTMLElement>(".hero-detail-plane");
+          const markers = gsap.utils.toArray<HTMLElement>(
+            ".hero-detail",
+            root.current,
+          );
+          let detailWidth = 0;
+          let detailHeight = 0;
+          const positionDetails = (progress = 0) => {
+            const frame = Math.min(7, Math.max(0, progress) * 7);
+            const from = Math.floor(frame);
+            const to = Math.min(7, from + 1);
+            markers.forEach((marker, i) => {
+              const points = detailPoints[i].positions;
+              const x = gsap.utils.interpolate(
+                points[from][0],
+                points[to][0],
+                frame - from,
+              );
+              const y = gsap.utils.interpolate(
+                points[from][1],
+                points[to][1],
+                frame - from,
+              );
+              gsap.set(marker, {
+                x: (x / 100) * detailWidth,
+                y: (y / 100) * detailHeight,
+              });
+            });
+          };
+          const sizeDetails = () => {
+            if (!plane) return;
+            const bounds = media.getBoundingClientRect();
+            const ratio =
+              media.videoWidth && media.videoHeight
+                ? media.videoWidth / media.videoHeight
+                : 16 / 9;
+            const cover = getComputedStyle(media).objectFit === "cover";
+            const width = (cover ? Math.max : Math.min)(
+              bounds.width,
+              bounds.height * ratio,
+            );
+            detailWidth = width;
+            detailHeight = width / ratio;
+            plane.style.width = `${detailWidth}px`;
+            plane.style.height = `${detailHeight}px`;
+            positionDetails(triggerRef.current?.progress ?? 0);
+          };
+          const observer =
+            typeof ResizeObserver === "undefined"
+              ? null
+              : new ResizeObserver(sizeDetails);
+          observer?.observe(media);
+          window.addEventListener("resize", sizeDetails, { passive: true });
+          media.addEventListener("loadedmetadata", sizeDetails);
+          sizeDetails();
+          const cleanupDetails = () => {
+            observer?.disconnect();
+            window.removeEventListener("resize", sizeDetails);
+            media.removeEventListener("loadedmetadata", sizeDetails);
+          };
           activeRef.current = 0;
           setActive(0);
           const stages = gsap.utils.toArray<HTMLElement>(
@@ -37,17 +143,15 @@ export function HeroScrollExperience() {
           );
           if (reduce) {
             setActive(0);
-            return;
+            gsap.set(markers, { autoAlpha: 1, scale: 1 });
+            return cleanupDetails;
           }
-          const media = video.current!;
           const connection = (
             navigator as Navigator & { connection?: { saveData?: boolean } }
           ).connection;
-          if (!connection?.saveData) {
-            media.preload = "auto";
-            media.src = `/media/hero-${desktop ? "desktop" : "mobile"}.mp4`;
-            media.load();
-          }
+          media.preload = connection?.saveData ? "metadata" : "auto";
+          media.src = `/media/hero-${desktop ? "desktop" : "mobile"}.mp4`;
+          media.load();
           let desiredTime = 0;
           let lastSeek = 0;
           const seek = () => {
@@ -80,12 +184,13 @@ export function HeroScrollExperience() {
               start: "top top",
               end: () =>
                 `+=${root.current!.querySelector<HTMLElement>(".hero-stage")!.offsetHeight * (desktop ? 2.9 : 2.4)}`,
-              scrub: desktop ? 0.45 : 0.2,
+              scrub: desktop ? 0.45 : true,
               anticipatePin: 1,
               invalidateOnRefresh: true,
             },
             onUpdate: () => {
               const p = tl.progress();
+              positionDetails(p);
               desiredTime = Number.isFinite(media.duration)
                 ? p * media.duration
                 : 0;
@@ -97,6 +202,7 @@ export function HeroScrollExperience() {
             },
           });
           triggerRef.current = tl.scrollTrigger!;
+          positionDetails(0);
           tl.to(
             ".hero-progress-fill",
             { scaleX: 1, ease: "none", duration: 4 },
@@ -107,6 +213,14 @@ export function HeroScrollExperience() {
               tl.to(stage, { autoAlpha: 1, y: 0, duration: 0.2 }, i + 0.01);
             if (i < 3)
               tl.to(stage, { autoAlpha: 0, y: -18, duration: 0.18 }, i + 0.83);
+          });
+          gsap.set(markers, { autoAlpha: 0, scale: 0.88 });
+          markers.forEach((marker, i) => {
+            tl.to(
+              marker,
+              { autoAlpha: 1, scale: 1, duration: 0.32, ease: "power2.out" },
+              0.4 + i * 1.05,
+            );
           });
           gsap.from(".hero-intro-line", {
             yPercent: 105,
@@ -149,6 +263,7 @@ export function HeroScrollExperience() {
           media.addEventListener("loadedmetadata", refresh);
           media.addEventListener("loadeddata", refresh);
           return () => {
+            cleanupDetails();
             disposed = true;
             root.current?.removeEventListener("touchstart", unlock);
             gsap.ticker.remove(seek);
@@ -197,6 +312,17 @@ export function HeroScrollExperience() {
             disablePictureInPicture
             tabIndex={-1}
           />
+          <div className="hero-detail-plane">
+            {detailPoints.map((point) => (
+              <div className="hero-detail" key={point.label}>
+                <span className="hero-detail-dot" />
+                <span className="hero-detail-label">
+                  {point.label}
+                  <small>{point.detail}</small>
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="hero-location">
           <span className="status-dot" /> BARREIRAS, BAHIA{" "}

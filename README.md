@@ -11,6 +11,8 @@ npm run dev -- --port 3077
 
 Abra http://localhost:3077.
 
+No celular, use `http://192.168.100.6:3077` na mesma rede Wi-Fi. O endereço está autorizado em `allowedDevOrigins` no `next.config.ts`; se o IP do computador mudar, atualize essa configuração para permitir que as interações carreguem no modo de desenvolvimento.
+
 ```sh
 npm run build
 npm start -- --port 3077
@@ -23,9 +25,9 @@ Todo o conteúdo comercial e seus campos pendentes estão em `src/content/site.t
 - WhatsApp, aplicativo, Instagram e mapa de Barreirinhas vieram do Linktree oficial: https://linktr.ee/barbeariacasa77 (consulta em 11/09/2026). Nenhuma mensagem foi enviada.
 - Enquanto o número direto não for informado, o contato usa o link oficial do WhatsApp Business. Mensagens contextualizadas estão preparadas. Ao preencher o número, o site passa automaticamente a usar `wa.me` com `text` codificado. A aceitação do texto pelo link Business depende do WhatsApp.
 - O endereço de Renato Gonçalves foi obtido no mesmo Linktree. Confirmar endereços das outras unidades, horários, contatos por unidade e mapa de Avenida.
-- Os três planos são slots provisórios, claramente identificados. Substituir nomes, preços, benefícios e condições; marcar `provisional: false`. O destaque não é apresentado como recomendação enquanto o plano for provisório.
+- Os sete planos usam nomes, preços, serviços e dias de utilização fornecidos pelo responsável. Os cards seguem uma escala de cinza, do mais claro ao mais escuro.
 - A lista `professionals` está vazia. Adicionar apenas profissionais confirmados, com nomes, fotos, unidade, especialidade e `confirmed: true`. Até lá são exibidas as fotos editoriais da marca, sem atribuir identidades a modelos.
-- `reviews` está vazio; preencher somente depoimentos autorizados/verificados e marcar `verified: true`. Nota e quantidade ficam nulas até confirmação. O componente já tem carrossel controlável, teclado, estrelas e autoria; não há rotação automática. Nunca agregar notas de unidades distintas sem confirmação.
+- `reviews` contém seis trechos de avaliações públicas, com autoria e links de origem. São apresentadas 647 avaliações no total, com notas e contagens separadas por unidade e data de consulta. O carrossel permite avançar, voltar e arrastar, com contador sincronizado; não há rotação automática.
 - Informar domínio definitivo para gerar canonical, URLs Open Graph e sitemap. Sem domínio, não são fabricadas URLs de produção.
 - O JSON-LD publica apenas Organization com nome e área atendida. Adicionar LocalBusiness por unidade somente após completar os dados reais. Não são publicados endereços ou avaliações fictícias.
 - A página de privacidade descreve o funcionamento atual e deve ser atualizada se forem adicionados formulários, publicidade, analytics ou uma hospedagem com tratamento de dados diferente.
@@ -58,11 +60,11 @@ npm run assets
 
 ## Movimento e acessibilidade
 
-- Hero com quatro capítulos, pin de aproximadamente 390vh no desktop e 290vh no mobile. O vídeo segue a timeline nos dois sentidos, após carregar os metadados.
+- Hero com quatro capítulos e distância de scroll de 2,9 alturas da hero no desktop e 2,4 no celular. O vídeo segue a timeline nos dois sentidos, após carregar os metadados. Três marcadores destacam cabelo, sobrancelha e barba progressivamente.
 - Buscas de vídeo limitadas a 30 Hz no desktop e 15 Hz no celular, sem enfileirar buscas durante `seeking`.
 - Lenis sincronizado ao ticker GSAP e ScrollTrigger; scroll touch continua nativo.
 - Cleanup via `useGSAP`/`matchMedia`, refresh após fontes e metadados, animações pausadas na aba oculta.
-- Movimento reduzido remove pin, vídeo e reveals; modo de economia de dados mantém o poster.
+- Movimento reduzido remove pin, vídeo e reveals; economia de dados limita o pré-carregamento aos metadados, mantendo a fonte de vídeo disponível.
 - Conteúdo renderizado no servidor, menu com foco controlado, abas Radix com teclado, links contextuais, alvos de toque e foco visível.
 
 ## Componente 21st.dev
