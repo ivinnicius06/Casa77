@@ -185,17 +185,17 @@ export const professionals: Professional[] = [];
 export const editorial = [
   {
     image: "/images/Funcionario01.jpg",
-    title: "Autenticidade.",
+    title: "Emilly",
     caption: "Cada estilo, uma identidade.",
   },
   {
     image: "/images/editorial-02.webp",
-    title: "Personalidade.",
+    title: "MAYCK",
     caption: "Seu jeito de estar no mundo.",
   },
   {
     image: "/images/Funcionario03.jpg",
-    title: "Presença.",
+    title: "MATHEUS",
     caption: "Confiança em cada detalhe.",
   },
 ];
